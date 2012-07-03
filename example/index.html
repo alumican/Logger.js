@@ -1,0 +1,68 @@
+<!doctype html>
+<html>
+	<head>
+		<title>Logger.js</title>
+
+		<!-- import jQuery for JQueryWriter -->
+		<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+
+		<!-- import Dependance -->
+		<script type="text/javascript" src="http://alumican.github.com/Namespace.js/src/1.0.0/Namespace.js"></script>
+
+		<!-- import Logger -->
+		<script type="text/javascript" src="../src/1.0.0/Logger.min.js"></script>
+
+		<!-- how to use Logger -->
+		<script type="text/javascript">$(function() {
+
+		//import Logger classes to global
+		net.alumican.util.Namespace('net.alumican.logger').import('*');
+
+		//set log level
+		Logger.setLevel(Logger.WARN);
+
+		//set log writer
+		//Logger.addWriter(new AlertWriter());
+		Logger.addWriter(new ConsoleWriter());
+		Logger.addWriter(new JQueryWriter($('#textarea')));
+		Logger.addWriter(new JQueryWriter($('#pre'), false));
+		Logger.addWriter(new CallbackWriter(function(message) { console.log(message + ' by CallbackWriter'); }));
+
+		//start logging
+		Logger.verbose('This is verbose message.');
+		Logger.info('This is info message.');
+		Logger.warn('This is', 'warn message.');
+		Logger.error('This is', 'error', 'message.');
+		Logger.fatal('This', 'is', 'fatal', 'message.');
+
+		});</script>
+
+
+		<!-- stylesheet -->
+		<style type="text/css">
+		body {
+			font-family: monospace;
+			font-size: 14px;
+		}
+		div {
+			margin: 20px;
+			padding: 10px;
+			width: 380px;
+			background-color: #ccc;
+		}
+		textarea {
+			display: block;
+		}
+		</style>
+	</head>
+	<body>
+		<div>
+			<strong>JQueryWriter - textarea</strong>
+			<textarea id="textarea" rows="7" cols="50"></textarea>
+		</div>
+		<div>
+			<strong>JQueryWriter - pre</strong>
+			<pre id="pre"></pre>
+		</div>
+	</body>
+</html>
