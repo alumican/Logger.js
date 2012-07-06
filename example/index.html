@@ -10,30 +10,71 @@
 		<script type="text/javascript" src="http://alumican.github.com/Namespace.js/src/1.0.0/Namespace.js"></script>
 
 		<!-- import Logger -->
-		<script type="text/javascript" src="../src/1.0.0/Logger.min.js"></script>
+		<script type="text/javascript" src="../src/1.0.0/Logger.js"></script>
 
 		<!-- how to use Logger -->
 		<script type="text/javascript">$(function() {
 
-		//import Logger classes to global
+		//import Logger to global
 		net.alumican.util.Namespace('net.alumican.logger').import('*');
 
+		//----------------------------------------
 		//set log level
-		Logger.setLevel(Logger.WARN);
+		Logger.setLevel(Logger.INFO);
 
+		//----------------------------------------
 		//set log writer
-		//Logger.addWriter(new AlertWriter());
-		Logger.addWriter(new ConsoleWriter());
-		Logger.addWriter(new JQueryWriter($('#textarea')));
-		Logger.addWriter(new JQueryWriter($('#pre'), false));
-		Logger.addWriter(new CallbackWriter(function(message) { console.log(message + ' by CallbackWriter'); }));
 
+		//logging with alert
+		//Logger.addWriter(new AlertWriter());
+
+		//logging with console.log
+		Logger.addWriter(new ConsoleWriter());
+
+		//logging with jQuery.append or jQuery.prepend
+		Logger.addWriter(new JQueryWriter($('#textarea')));
+
+		//logging with callback function
+		Logger.addWriter(new CallbackWriter(
+			function(message, level) {
+				$('#p').append(message + '<br />');
+			},
+			function(message) {
+				$('#p').remove();
+			}
+		));
+
+		//logging with custom writer class
+		function CustomWriter(element) {
+			this.print = function(message, level) {
+				element.append(message + '\n');
+			};
+			this.clear = function() {
+				element.remove();
+			};
+		}
+		Logger.addWriter(new CustomWriter($('#pre')));
+
+		//logging with pushing to stack
+		var stackWriter = new StackWriter();
+		Logger.addWriter(stackWriter);
+
+		//----------------------------------------
 		//start logging
-		Logger.verbose('This is verbose message.');
+		Logger.debug('This is debug message.');
 		Logger.info('This is info message.');
 		Logger.warn('This is', 'warn message.');
 		Logger.error('This is', 'error', 'message.');
 		Logger.fatal('This', 'is', 'fatal', 'message.');
+
+		//----------------------------------------
+		//dump logs of StackWriter
+		Logger.setDumpEnabled(true);
+		Logger.dumpToConsole(stackWriter.log);
+
+		//----------------------------------------
+		//clear log
+		//Logger.clear();
 
 		});</script>
 
@@ -57,11 +98,15 @@
 	</head>
 	<body>
 		<div>
-			<strong>JQueryWriter - textarea</strong>
+			<strong>JQueryWriter</strong>
 			<textarea id="textarea" rows="7" cols="50"></textarea>
 		</div>
 		<div>
-			<strong>JQueryWriter - pre</strong>
+			<strong>CallbackWriter</strong>
+			<p id="p"></p>
+		</div>
+		<div>
+			<strong>CustomWriter</strong>
 			<pre id="pre"></pre>
 		</div>
 	</body>
